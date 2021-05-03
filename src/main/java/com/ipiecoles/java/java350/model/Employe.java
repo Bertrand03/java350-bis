@@ -15,7 +15,7 @@ public class Employe {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id
-    // blablaaaa
+    // blablaaaaa
 
     private String nom;
 
