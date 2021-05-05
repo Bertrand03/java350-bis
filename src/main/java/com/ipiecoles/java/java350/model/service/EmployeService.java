@@ -1,10 +1,10 @@
 package com.ipiecoles.java.java350.model.service;
 
 import com.ipiecoles.java.java350.model.exception.EmployeException;
-import com.ipiecoles.java.java350.model.model.Employe;
-import com.ipiecoles.java.java350.model.model.Entreprise;
-import com.ipiecoles.java.java350.model.model.NiveauEtude;
-import com.ipiecoles.java.java350.model.model.Poste;
+import com.ipiecoles.java.java350.model.Employe;
+import com.ipiecoles.java.java350.model.Entreprise;
+import com.ipiecoles.java.java350.model.NiveauEtude;
+import com.ipiecoles.java.java350.model.Poste;
 import com.ipiecoles.java.java350.model.repository.EmployeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,6 +59,9 @@ public class EmployeService {
         if(tempsPartiel != null){
             salaire = salaire * tempsPartiel;
         }
+
+        //Arrondi au centime
+        salaire = Math.round(salaire*100)/100d;
 
         //Création et sauvegarde en BDD de l'employé.
         Employe employe = new Employe(nom, prenom, matricule, LocalDate.now(), salaire, Entreprise.PERFORMANCE_BASE, tempsPartiel);

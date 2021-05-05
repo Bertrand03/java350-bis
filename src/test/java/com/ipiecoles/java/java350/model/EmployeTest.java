@@ -1,12 +1,23 @@
 package com.ipiecoles.java.java350.model;
-import com.ipiecoles.java.java350.model.model.Employe;
-import com.ipiecoles.java.java350.model.model.Entreprise;
+import com.ipiecoles.java.java350.model.Employe;
+import com.ipiecoles.java.java350.model.Entreprise;
+import com.ipiecoles.java.java350.model.repository.EmployeRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+
+@ExtendWith(SpringExtension.class) //Junit 5
+@SpringBootTest // ou @DataJpaTest
+
+
+
 public class EmployeTest {
     //Scénarios de test, 1 scénario = 1 test
     @Test
@@ -80,13 +91,16 @@ public class EmployeTest {
 
     // Test avec paramètres
     @ParameterizedTest(name = "Employé anciennete {0}, performance {1}, matricule {2}, temps partiel {3} => Prime {4}") //Change l'annotation
-//Rajoute l'annotation contenant les scénarios de test  (réflechir aux dfférents scénarios possibles)
+    //Rajoute l'annotation contenant les scénarios de test  (réflechir aux dfférents scénarios possibles)
     @CsvSource({
             "0,,'M12345',1.0,1700.0", //Manager à plein temps sans ancienneté
             "0,,'T12345',1.0,1000.0", //Technicien à plein temps sans ancienneté
+            "0,1,'T12345',1.0,1000.0", //Technicien à plein temps sans ancienneté avec perfomance de base
             "0,,'M12345',0.5,850.0", //Manager à mi-temps sans ancienneté
             "5,,'M12345',1.0,2200.0", //Manager à plein temps avec 5 années d'ancienneté
             "0,3,'T12345',1.0,3300.0", //Technicien à plein temps sans ancienneté avec performance 3
+            "2,1,'T12345',1.0,1200.0", //Technicien à plein temps avec 2 ans d'ancienneté avec performance 3
+            "0,1,'T12345',1.0,1000.0" //Technicien à plein temps sans ancienneté avec performance 3
     })
     public void testGetPrimeAnnuelle(Integer nbAnneesAnciennete, Integer performance, String matricule, Double tempsPartiel,
                                      Double primeObtenue){
@@ -102,6 +116,5 @@ public class EmployeTest {
         //Remplace la valeur de sortie en dur par le paramètre de sortie
         Assertions.assertThat(primeCalculee).isEqualTo(primeObtenue);
     }
-
 
 }

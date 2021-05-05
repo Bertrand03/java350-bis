@@ -1,4 +1,4 @@
-package com.ipiecoles.java.java350.model.model;
+package com.ipiecoles.java.java350.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,7 +33,8 @@ public class Employe {
     public Employe() {
     }
 
-    public Employe(String nom, String prenom, String matricule, LocalDate dateEmbauche, Double salaire, Integer performance, Double tempsPartiel) {
+    public Employe(String nom, String prenom, String matricule, LocalDate dateEmbauche,
+                   Double salaire, Integer performance, Double tempsPartiel) {
         this.nom = nom;
         this.prenom = prenom;
         this.matricule = matricule;

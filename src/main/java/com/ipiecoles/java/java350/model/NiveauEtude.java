@@ -1,4 +1,4 @@
-package com.ipiecoles.java.java350.model.model;
+package com.ipiecoles.java.java350.model;
 
 public enum NiveauEtude {
     CAP,
