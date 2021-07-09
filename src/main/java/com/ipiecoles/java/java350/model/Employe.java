@@ -113,8 +113,32 @@ public class Employe {
         return prime * this.tempsPartiel;
     }
 
-    //Augmenter salaire
-    public void augmenterSalaire(double pourcentage){}
+
+    /**
+     Calcul de l'augmentation de salaire avec prise en compte de l'indice de performance
+     qui applique un pourcentage supplémentaire au pourcentage de base.
+
+     Par exemple un salarié qui a un indice de performance à 2 aura 2% en plus du pourcentage
+     de base.
+     **/
+
+       //Augmenter salaire selon performance
+    public Double augmenterSalaire(double pourcentage){
+        Double pourcentageSupplementaire = 0.0;
+
+        if (performance != null || performance != 0.0) {
+            switch (performance) {
+                case 1 : pourcentageSupplementaire = 0.01;
+                    break;
+                case 2 : pourcentageSupplementaire = 0.02;
+                    break;
+                case 3 : pourcentageSupplementaire = 0.03;
+                    break;
+                default: pourcentageSupplementaire = 0.0;
+            }
+        }
+        return salaire * (pourcentage + pourcentageSupplementaire) + salaire;
+    }
 
     public Long getId() {
         return id;

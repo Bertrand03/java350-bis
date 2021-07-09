@@ -120,7 +120,86 @@ public class EmployeTest {
         Assertions.assertThat(primeCalculee).isEqualTo(primeObtenue);
         Assertions.assertThat(primeCalculee).isNotNaN().isPositive();
         Assertions.assertThat(nbAnneesAnciennete).isNotNull().isNotNegative().isGreaterThanOrEqualTo(0);
-        Assertions.assertThat(matricule).startsWi
+    }
+
+    @Test
+    public void testAugmenterSalaireIndicePerformanceNull(){
+        //Given
+        Employe employe = new Employe("Doe", "John", "M12345",
+                LocalDate.now(), 1000.00, null, 1.0);
+
+        Double pourcentage = 0.1;
+        Double salaireCorrect = (employe.getSalaire() *  (pourcentage)) + employe.getSalaire();
+
+        //When
+        Double salaireAugmente = employe.augmenterSalaire(0.1);
+
+        //Then
+        Assertions.assertThat(salaireAugmente).isEqualTo(salaireCorrect);
+    }
+
+    @Test
+    public void testAugmenterSalaireIndicePerformanceZero(){
+        //Given
+        Employe employe = new Employe("Doe", "John", "M12345",
+                LocalDate.now(), 1000.00, 0, 1.0);
+
+        Double pourcentage = 0.1;
+        Double salaireCorrect = (employe.getSalaire() *  (pourcentage + 0.0)) + employe.getSalaire();
+
+        //When
+        Double salaireAugmente = employe.augmenterSalaire(0.1);
+
+        //Then
+        Assertions.assertThat(salaireAugmente).isEqualTo(salaireCorrect);
+    }
+
+    @Test
+    public void testAugmenterSalaireIndicePerformance1(){
+        //Given
+        Employe employe = new Employe("Doe", "John", "M12345",
+                LocalDate.now(), 1000.00, 1, 1.0);
+
+        Double pourcentage = 0.10;
+        Double salaireCorrect = (employe.getSalaire() *  (pourcentage + 0.01)) + employe.getSalaire();
+
+        //When
+        Double salaireAugmente = employe.augmenterSalaire(0.10);
+
+        //Then
+        Assertions.assertThat(salaireAugmente).isEqualTo(salaireCorrect);
+    }
+
+    @Test
+    public void testAugmenterSalaireIndicePerformance2(){
+        //Given
+        Employe employe = new Employe("Doe", "John", "M12345",
+                LocalDate.now(), 1000.00, 2, 1.0);
+
+        Double pourcentage = 0.10;
+        Double salaireCorrect = (employe.getSalaire() *  (pourcentage + 0.02)) + employe.getSalaire();
+
+        //When
+        Double salaireAugmente = employe.augmenterSalaire(0.10);
+
+        //Then
+        Assertions.assertThat(salaireAugmente).isEqualTo(salaireCorrect);
+    }
+
+    @Test
+    public void testAugmenterSalaireIndicePerformance3(){
+        //Given
+        Employe employe = new Employe("Doe", "John", "M12345",
+                LocalDate.now(), 1000.00, 3, 1.0);
+
+        Double pourcentage = 0.10;
+        Double salaireCorrect = (employe.getSalaire() *  (pourcentage + 0.03)) + employe.getSalaire();
+
+        //When
+        Double salaireAugmente = employe.augmenterSalaire(0.10);
+
+        //Then
+        Assertions.assertThat(salaireAugmente).isEqualTo(salaireCorrect);
     }
 
 }
