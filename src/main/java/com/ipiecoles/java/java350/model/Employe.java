@@ -64,13 +64,13 @@ public class Employe {
     }
 
     public Integer getNbRtt(LocalDate d){
-        int i1 = d.isLeapYear() ? 365 : 366;int var = 104;
+        int i1 = d.isLeapYear() ? 366 : 365;int var = 104;
         switch (LocalDate.of(d.getYear(),1,1).getDayOfWeek()){
         case THURSDAY: if(d.isLeapYear()) var =  var + 1; break;
         case FRIDAY:
         if(d.isLeapYear()) var =  var + 2;
         else var =  var + 1;
-case SATURDAY:var = var + 1;
+        case SATURDAY:var = var + 1;
                     break;
         }
         int monInt = (int) Entreprise.joursFeries(d).stream().filter(localDate ->
@@ -104,7 +104,7 @@ case SATURDAY:var = var + 1;
         else if (this.performance == null || Entreprise.PERFORMANCE_BASE.equals(this.performance)){
             prime = Entreprise.primeAnnuelleBase() + primeAnciennete;
         }
-        //Pour les employés plus performance, on bonnifie la prime de base en multipliant par la performance de l'employé
+        //Pour les employés plus performants, on bonnifie la prime de base en multipliant par la performance de l'employé
         // et l'indice de prime de base.
         else {
             prime = Entreprise.primeAnnuelleBase() * (this.performance + Entreprise.INDICE_PRIME_BASE) + primeAnciennete;
@@ -114,7 +114,7 @@ case SATURDAY:var = var + 1;
     }
 
     //Augmenter salaire
-    //public void augmenterSalaire(double pourcentage){}
+    public void augmenterSalaire(double pourcentage){}
 
     public Long getId() {
         return id;

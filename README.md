@@ -50,14 +50,16 @@ Répondre de nouveau aux questions. Qu'est-ce qui a changé ?
    12. Analyser le premier rapport de Sonar
 
 ## Tests unitaires
-
+ 
 ### Tests unitaires classiques
 
-Créer la classe permettant de tester la méthode `getNombreAnneeAnciennete` de la classe `Employe` et mettre en place les tests unitaires nécessaires pour tester le plus exhaustivement possible cette méthode. Bien penser à tous les cas possibles, notamment les cas aux limites. Ne pas hésiter à corriger le code de la méthode initiale si besoin.
+Créer la classe permettant de tester la méthode `getNombreAnneeAnciennete` de la classe `Employe` et mettre en place les tests unitaires nécessaires pour tester le plus 
+exhaustivement possible cette méthode. Bien penser à tous les cas possibles, notamment les cas aux limites. Ne pas hésiter à corriger le code de la méthode initiale si besoin.
 
 ### Tests paramétrés
 
-Créer une méthode de test paramétré permettant de tester le plus exhaustivement possible la méthode `getPrimeAnnuelle` de la classe `Employe` et corriger les éventuels problème de cette méthode.
+Créer une méthode de test paramétré permettant de tester le plus exhaustivement possible la méthode `getPrimeAnnuelle` de la classe `Employe` et corriger les éventuels problèmes 
+de cette méthode.
 
 ### Tests mockés
 

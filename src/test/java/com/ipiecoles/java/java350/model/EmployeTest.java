@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.persistence.Tuple;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 @ExtendWith(SpringExtension.class) //Junit 5
 @SpringBootTest // ou @DataJpaTest
@@ -20,6 +23,7 @@ import java.time.LocalDate;
 
 public class EmployeTest {
     //Scénarios de test, 1 scénario = 1 test
+
     @Test
     public void testGetNbAnneesAncienneteDateEmbaucheToday(){
         //Given
@@ -91,7 +95,6 @@ public class EmployeTest {
 
     // Test avec paramètres
     @ParameterizedTest(name = "Employé anciennete {0}, performance {1}, matricule {2}, temps partiel {3} => Prime {4}") //Change l'annotation
-    //Rajoute l'annotation contenant les scénarios de test  (réflechir aux dfférents scénarios possibles)
     @CsvSource({
             "0,,'M12345',1.0,1700.0", //Manager à plein temps sans ancienneté
             "0,,'T12345',1.0,1000.0", //Technicien à plein temps sans ancienneté
@@ -115,6 +118,9 @@ public class EmployeTest {
         //Then
         //Remplace la valeur de sortie en dur par le paramètre de sortie
         Assertions.assertThat(primeCalculee).isEqualTo(primeObtenue);
+        Assertions.assertThat(primeCalculee).isNotNaN().isPositive();
+        Assertions.assertThat(nbAnneesAnciennete).isNotNull().isNotNegative().isGreaterThanOrEqualTo(0);
+        Assertions.assertThat(matricule).startsWi
     }
 
 }
