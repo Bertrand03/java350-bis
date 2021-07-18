@@ -1,20 +1,16 @@
 package com.ipiecoles.java.java350.model;
-import com.ipiecoles.java.java350.model.Employe;
-import com.ipiecoles.java.java350.model.Entreprise;
-import com.ipiecoles.java.java350.model.repository.EmployeRepository;
+
 import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.persistence.Tuple;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 @ExtendWith(SpringExtension.class) //Junit 5
 @SpringBootTest // ou @DataJpaTest
@@ -118,28 +114,27 @@ public class EmployeTest {
         //Then
         //Remplace la valeur de sortie en dur par le paramètre de sortie
         Assertions.assertThat(primeCalculee).isEqualTo(primeObtenue);
-        Assertions.assertThat(primeCalculee).isNotNaN().isPositive();
-        Assertions.assertThat(nbAnneesAnciennete).isNotNull().isNotNegative().isGreaterThanOrEqualTo(0);
+
     }
 
     @Test
-    public void testAugmenterSalaireIndicePerformanceNull(){
+    public void testAugmenterSalaireIndicePerformanceNull() throws Exception{
         //Given
         Employe employe = new Employe("Doe", "John", "M12345",
                 LocalDate.now(), 1000.00, null, 1.0);
 
-        Double pourcentage = 0.1;
-        Double salaireCorrect = (employe.getSalaire() *  (pourcentage)) + employe.getSalaire();
-
         //When
-        Double salaireAugmente = employe.augmenterSalaire(0.1);
+        assertThatThrownBy(
+                () -> {
+            throw new Exception("La performance doit être supérieur à 0 et inférieure à 100");
+        });
 
         //Then
-        Assertions.assertThat(salaireAugmente).isEqualTo(salaireCorrect);
+        Assertions.assertThat(employe.getPerformance()).isEqualTo(null);
     }
 
     @Test
-    public void testAugmenterSalaireIndicePerformanceZero(){
+    public void testAugmenterSalaireIndicePerformanceZero() throws Exception{
         //Given
         Employe employe = new Employe("Doe", "John", "M12345",
                 LocalDate.now(), 1000.00, 0, 1.0);
@@ -155,7 +150,7 @@ public class EmployeTest {
     }
 
     @Test
-    public void testAugmenterSalaireIndicePerformance1(){
+    public void testAugmenterSalaireIndicePerformance1() throws Exception{
         //Given
         Employe employe = new Employe("Doe", "John", "M12345",
                 LocalDate.now(), 1000.00, 1, 1.0);
@@ -164,14 +159,14 @@ public class EmployeTest {
         Double salaireCorrect = (employe.getSalaire() *  (pourcentage + 0.01)) + employe.getSalaire();
 
         //When
-        Double salaireAugmente = employe.augmenterSalaire(0.10);
+        Double salaireAugmente = employe.augmenterSalaire(0.1);
 
         //Then
         Assertions.assertThat(salaireAugmente).isEqualTo(salaireCorrect);
     }
 
     @Test
-    public void testAugmenterSalaireIndicePerformance2(){
+    public void testAugmenterSalaireIndicePerformance2() throws Exception{
         //Given
         Employe employe = new Employe("Doe", "John", "M12345",
                 LocalDate.now(), 1000.00, 2, 1.0);
@@ -187,7 +182,7 @@ public class EmployeTest {
     }
 
     @Test
-    public void testAugmenterSalaireIndicePerformance3(){
+    public void testAugmenterSalaireIndicePerformance3() throws Exception{
         //Given
         Employe employe = new Employe("Doe", "John", "M12345",
                 LocalDate.now(), 1000.00, 3, 1.0);
@@ -200,6 +195,26 @@ public class EmployeTest {
 
         //Then
         Assertions.assertThat(salaireAugmente).isEqualTo(salaireCorrect);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "2019, 1.0, 8",
+            "2021, 0.5, 5",
+            "2022, 1.0, 10",
+            "2032, 1.0, 11",
+    })
+    public void getNbRtt(Integer year ,Double tempsPartiel, Integer nbRtt){
+        //Given
+        Employe employe = new Employe("Doe", "John", "T12345",LocalDate.now().minusYears(3), Entreprise.SALAIRE_BASE, 1, tempsPartiel);
+        LocalDate dateToday = LocalDate.of(year,1,1);
+
+        //When
+        Integer totalRtt = employe.getNbRtt(dateToday);
+
+        //Then
+        Assertions.assertThat(nbRtt).isEqualTo(totalRtt);
+
     }
 
 }

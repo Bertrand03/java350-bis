@@ -10,12 +10,20 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+
+import static org.mockito.Mockito.times;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +63,7 @@ public class EmployeServiceTest {
         // Ici on récupère l'argument "employe" (qui contient l'objet Employe) de la méthode save() de employeRepository
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
         // Pas obligé de mettre le times à 1 si on ne le met pas
-        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
         Employe employe = employeArgumentCaptor.getValue();
 
         Assertions.assertThat(employe).isNotNull();
@@ -97,7 +105,7 @@ public class EmployeServiceTest {
         employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel);
         //Then
         ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        Mockito.verify(employeRepository, Mockito.times(1)).save(employeArgumentCaptor.capture());
+        Mockito.verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
         Employe employe = employeArgumentCaptor.getValue();
 
         //Employe employe = employeRepository.findByMatricule("M00001");
@@ -166,6 +174,90 @@ public class EmployeServiceTest {
                 .isInstanceOf(EntityExistsException.class)
                 .hasMessage("L'employé de matricule M99999 existe déjà en BDD");
 
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "C24355, 4, 42000, 25200, 1",
+            "C24355, 4, 42000, 37800, 3",
+            "C24355, 4, 42000, 42000, 5",
+            "C24355, 4, 42000, 46200, 6",
+            "C24355, 4, 42000, 54600, 9",
+    })
+    void testCalculPerformanceCommercial(String matricule, int performance, Long objectifCa, Long caTraite, int expectedPerf) throws EmployeException {
+        //Given
+        Employe e = new Employe();
+        e.setMatricule(matricule);
+        e.setPerformance(performance);
+        employeRepository.save(e);
+        Mockito.when(employeRepository.findByMatricule("C24355")).thenReturn(e);
+        Mockito.when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.5);
+
+
+        //When
+        employeService.calculPerformanceCommercial(e.getMatricule(), caTraite, objectifCa);
+        ArgumentCaptor<Employe> employe = ArgumentCaptor.forClass(Employe.class);
+
+        //Then
+        Mockito.verify(employeRepository, times(2)).save(employe.capture());
+        Assertions.assertThat(expectedPerf).isEqualTo(employe.getValue().getPerformance());
+    }
+
+
+    @Test
+    public void calculPerformanceCommercialCaTraiteErrone() throws EmployeException {
+        //String matricule, Long caTraite, Long objectifCa
+        //Given
+        String matricule = "M12345";
+        Long caTraite = null;
+        Long objectifCa = 10000l;
+
+
+        //When
+        try {
+            employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+            Assertions.fail("Devrait lever une exception");
+        } catch (EmployeException e ) {
+            //Then
+            Assertions.assertThat(e.getMessage()).isEqualTo("Le chiffre d'affaire traité ne peut être négatif ou null !");
+        }
+
+    }
+
+    @Test
+    public void calculPerformanceCommercialObjectifCaErrone() {
+        //Given
+        String matricule = "M12345";
+        Long caTraite = 10000l;
+        Long objectifCa = null;
+
+
+        //When
+        try {
+            employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+            Assertions.fail("Devrait lever une exception");
+        } catch (EmployeException e ) {
+            //Then
+            Assertions.assertThat(e.getMessage()).isEqualTo("L'objectif de chiffre d'affaire ne peut être négatif ou null !");
+        }
+    }
+
+    @Test
+    public void calculPerformanceCommercialMatriculeErrone() {
+        //Given
+        String matricule = null;
+        Long caTraite = 10000l;
+        Long objectifCa = 12000l;
+
+
+        //When
+        try {
+            employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+            Assertions.fail("Devrait lever une exception");
+        } catch (EmployeException e ) {
+            //Then
+            Assertions.assertThat(e.getMessage()).isEqualTo("Le matricule ne peut être null et doit commencer par un C !");
+        }
     }
 }
 

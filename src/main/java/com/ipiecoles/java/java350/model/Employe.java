@@ -1,5 +1,8 @@
 package com.ipiecoles.java.java350.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +14,7 @@ import java.util.Objects;
 @Entity
 public class Employe {
 
+    private static final Logger logger = LoggerFactory.getLogger(Employe.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -63,19 +67,56 @@ public class Employe {
         return getNbRtt(LocalDate.now());
     }
 
-    public Integer getNbRtt(LocalDate d){
-        int i1 = d.isLeapYear() ? 366 : 365;int var = 104;
-        switch (LocalDate.of(d.getYear(),1,1).getDayOfWeek()){
-        case THURSDAY: if(d.isLeapYear()) var =  var + 1; break;
+    /**
+     * Le nombre de RTT se calcule à partir de la formule suivante :
+     * Nombre de jours dans l'année -
+     * Nombre de jours travaillés dans l'année en plein temps -
+     * Nombre de samedi et dimanche dans l'année -
+     * Nombre de jours fériés ne tombant pas le week-end -
+     * Nombre de congés payés.
+     * Le tout au pro-rata du taux d'activité du salarié
+     * @return le nombre de jours de RTT (int)
+     */
+    public Integer getNbRtt(LocalDate dateToday){
+        logger.debug("Passe dans la méthode getNbRtt");
+        //Nombre de jours dans l'année
+        Integer nbDaysInYear = dateToday.isLeapYear() ? 366 : 365;
+
+        //- Nombre de samedi et dimanche dans l'année
+        Integer nbDaysWeekEnd = 104;
+
+        // Quel est le premier jour de l'année ?
+        logger.debug("Avant le switch nbDaysWeekEnd vaut " + nbDaysWeekEnd);
+        switch (LocalDate.of(dateToday.getYear(),1,1).getDayOfWeek()){
+        case THURSDAY:
+            logger.debug("Case THURSDAY");
+            if(dateToday.isLeapYear()) {
+                nbDaysWeekEnd++;
+            }
+            break;
         case FRIDAY:
-        if(d.isLeapYear()) var =  var + 2;
-        else var =  var + 1;
-        case SATURDAY:var = var + 1;
-                    break;
+            logger.debug("Case FRIDAY");
+            if(dateToday.isLeapYear()){
+                nbDaysWeekEnd += 2;
+            }
+            else {
+                nbDaysWeekEnd++;
+            }
+        case SATURDAY:
+            logger.debug("Case SATURDAY");
+            nbDaysWeekEnd++;
+            break;
         }
-        int monInt = (int) Entreprise.joursFeries(d).stream().filter(localDate ->
+        logger.debug("Après le switch nbDaysWeekEnd vaut " + nbDaysWeekEnd);
+
+        // Nombre de jours fériés dans l'année
+        Integer nbHolidays = (int) Entreprise.joursFeries(dateToday).stream().filter(localDate ->
                 localDate.getDayOfWeek().getValue() <= DayOfWeek.FRIDAY.getValue()).count();
-        return (int) Math.ceil((i1 - Entreprise.NB_JOURS_MAX_FORFAIT - var - Entreprise.NB_CONGES_BASE - monInt) * tempsPartiel);
+
+        // Nombre de congés payés
+        Integer nbRtt = (int) Math.ceil((nbDaysInYear - Entreprise.NB_JOURS_MAX_FORFAIT - nbDaysWeekEnd - Entreprise.NB_CONGES_BASE - nbHolidays) * tempsPartiel);
+
+        return nbRtt;
     }
 
     /**
@@ -123,8 +164,9 @@ public class Employe {
      **/
 
        //Augmenter salaire selon performance
-    public Double augmenterSalaire(double pourcentage){
+    public Double augmenterSalaire(double pourcentage) throws Exception{
         Double pourcentageSupplementaire = 0.0;
+        Double salaireAugmente = 0.0;
 
         if (performance != null || performance != 0.0) {
             switch (performance) {
@@ -136,8 +178,12 @@ public class Employe {
                     break;
                 default: pourcentageSupplementaire = 0.0;
             }
+            salaireAugmente = salaire * (pourcentage + pourcentageSupplementaire) + salaire;
+        } else if (performance == null || performance <0 || performance > 100){
+            throw new Exception("La performance de l'employé n'est pas valide." +"/n" +
+                    "Le nombre doit être un nombre positif supérieur à 0 et inférieur ou égal à 100");
         }
-        return salaire * (pourcentage + pourcentageSupplementaire) + salaire;
+        return salaireAugmente;
     }
 
     public Long getId() {
