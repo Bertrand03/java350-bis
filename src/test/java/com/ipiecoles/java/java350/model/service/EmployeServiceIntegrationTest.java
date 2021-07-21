@@ -11,9 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
 
 @SpringBootTest
@@ -51,5 +49,25 @@ public class EmployeServiceIntegrationTest {
         Assertions.assertThat(employe.getTempsPartiel()).isEqualTo(tempsPartiel);
         //1521.22 * 1.6
         Assertions.assertThat(employe.getSalaire()).isEqualTo(2433.95d);
+    }
+
+    @Test
+    void testIntegrationCalculPerformanceCommercialCas2() throws EmployeException {
+        //Given
+        Employe e = new Employe();
+        e.setMatricule("C24355");
+        e.setPerformance(4);
+        employeRepository.save(e);
+        Long objectifCa = 42000L;
+        Long caTraite = 37800L;
+
+
+        //When
+        employeService.calculPerformanceCommercial(e.getMatricule(), caTraite, objectifCa);
+        // ArgumentCaptor pour ne pas à avoir à changer le Type de retour attendu dans la méthode appelée
+
+        //Then
+        Employe employe = employeRepository.findByMatricule("C24355");
+        Assertions.assertThat(2).isEqualTo(employe.getPerformance());
     }
 }
